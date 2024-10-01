@@ -1,6 +1,8 @@
 package com.rental.service.controllers;
 
 import com.rental.service.controllers.dto.AuthRequest;
+import com.rental.service.controllers.dto.TokenResponse;
+import com.rental.service.services.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,17 +15,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
+    private final TokenService tokenService;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager) {
+    public AuthController(AuthenticationManager authenticationManager, TokenService tokenService) {
         this.authenticationManager = authenticationManager;
+        this.tokenService = tokenService;
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody AuthRequest req) {
+    public TokenResponse login(@RequestBody AuthRequest req) {
         var user = new UsernamePasswordAuthenticationToken(req.email(), req.password());
         var auth = authenticationManager.authenticate(user);
 
-        return "Pessoa autenticada com sucesso: %s".formatted(auth.getName());
+        var token = tokenService.generateToken(auth.getName());
+
+        return new TokenResponse(token);
     }
 }
