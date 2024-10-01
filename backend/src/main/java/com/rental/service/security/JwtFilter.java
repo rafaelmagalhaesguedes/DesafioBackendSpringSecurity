@@ -32,15 +32,12 @@ public class JwtFilter extends OncePerRequestFilter {
         Optional<String> token = extractToken(request);
 
         if (token.isPresent()) {
-            // Se existir, validamos o token
             var subject = tokenService.validateToken(token.get());
-
-            // Se o token for válido, encontramos a pessoa associada
             var userDetails = userService.loadUserByUsername(subject);
 
-            // Informamos o Spring Security que a pessoa está autenticada
             var authentication = new UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.getAuthorities());
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
