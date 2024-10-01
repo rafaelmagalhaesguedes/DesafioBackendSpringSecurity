@@ -7,6 +7,7 @@ import com.rental.service.services.exceptions.ExistingUserException;
 import com.rental.service.services.exceptions.UserNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +21,7 @@ public class UserController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public UserResponse saveUser(@RequestBody @Valid UserRequest request) throws ExistingUserException {
         var user = userService.save(request.toUser());
         return UserResponse.fromUser(user);
