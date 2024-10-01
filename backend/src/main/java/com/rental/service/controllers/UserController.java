@@ -52,8 +52,9 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public List<UserResponse> findAllUsers() {
-        List<User> userList = userService.list();
+    public List<UserResponse> findAllUsers(@RequestParam(required = false, defaultValue = "0") int pageNumber,
+                                           @RequestParam(required = false, defaultValue = "10") int pageSize) {
+        List<User> userList = userService.list(pageNumber, pageSize);
 
         return  userList.stream()
                 .map(UserResponse::fromUser)

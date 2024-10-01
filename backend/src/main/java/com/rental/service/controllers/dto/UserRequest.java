@@ -7,6 +7,8 @@ import jakarta.validation.constraints.*;
 
 public record UserRequest(
         @NotBlank(message = "Name cannot be blank")
+        @Size(min = 2, max = 100, message = "Name must be between 2 and 50 characters")
+        @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ\\s]+$", message = "Name must contain only alphabetic characters and spaces")
         String name,
 
         @NotBlank(message = "Email cannot be blank")
@@ -14,7 +16,7 @@ public record UserRequest(
         String email,
 
         @NotBlank(message = "Password cannot be blank")
-        @Size(min = 1, max = 8, message = "Password must be between 1 and 8 characters")
+        @Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters")
         String password,
 
         @NotBlank(message = "Role cannot be blank")

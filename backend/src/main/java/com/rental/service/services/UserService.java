@@ -5,11 +5,14 @@ import com.rental.service.repositories.UserRepository;
 import com.rental.service.services.exceptions.ExistingUserException;
 import com.rental.service.services.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +25,7 @@ public class UserService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     public User save(User user) throws ExistingUserException {
         var existingUser = userRepository.findByEmail(user.getEmail());
 
@@ -41,6 +45,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(UserNotFoundException::new);
     }
 
+    @Transactional
     public User update(Long userId, User user) throws UserNotFoundException {
         var userFromDb = findById(userId);
 
@@ -52,6 +57,7 @@ public class UserService implements UserDetailsService {
         return userFromDb;
     }
 
+    @Transactional
     public User delete(Long userId) throws UserNotFoundException {
         var user = findById(userId);
 
@@ -60,8 +66,11 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public List<User> list() {
-        return userRepository.findAll();
+    public List<User> list(int pageNumber, int pageSize) {
+        var pageable = PageRequest.of(pageNumber, pageSize);
+        Page<User> page = userRepository.findAll(pageable);
+
+        return page.getContent();
     }
 
     private static String passwordEncoder(String password) {
