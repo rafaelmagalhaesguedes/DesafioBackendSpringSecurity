@@ -28,14 +28,7 @@ public class UserService implements UserDetailsService {
             throw new ExistingUserException();
         }
 
-        var newUser = User.builder()
-                .name(user.getName())
-                .email(user.getEmail())
-                .password(hashPassword(user.getPassword())) // Hash password
-                .role(Role.USER)
-                .build();
-
-        return userRepository.save(newUser);
+        return userRepository.save(user);
     }
 
     public User findById(Long id) throws UserNotFoundException {
