@@ -27,4 +27,11 @@ public class TokenService {
         return Instant.now()
                 .plus(30, ChronoUnit.MINUTES);
     }
+
+    public String validateToken(String token) {
+        return JWT.require(algorithm)
+                .build()
+                .verify(token)
+                .getSubject();
+    }
 }

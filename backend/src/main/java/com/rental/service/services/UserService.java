@@ -3,6 +3,8 @@ package com.rental.service.services;
 import com.rental.service.entities.User;
 import com.rental.service.enums.Role;
 import com.rental.service.repositories.UserRepository;
+import com.rental.service.services.exceptions.ExistingUserException;
+import com.rental.service.services.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,7 +21,13 @@ public class UserService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    public User save(User user) {
+    public User save(User user) throws ExistingUserException {
+        var existingUser = userRepository.findByEmail(user.getEmail());
+
+        if (existingUser.isPresent()) {
+            throw new ExistingUserException();
+        }
+
         var newUser = User.builder()
                 .name(user.getName())
                 .email(user.getEmail())
@@ -28,6 +36,11 @@ public class UserService implements UserDetailsService {
                 .build();
 
         return userRepository.save(newUser);
+    }
+
+    public User findById(Long id) throws UserNotFoundException {
+        return userRepository.findById(id)
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private static String hashPassword(String password) {

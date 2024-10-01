@@ -3,6 +3,7 @@ package com.rental.service.controllers;
 import com.rental.service.controllers.dto.AuthRequest;
 import com.rental.service.controllers.dto.TokenResponse;
 import com.rental.service.services.TokenService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public TokenResponse login(@RequestBody AuthRequest req) {
+    public TokenResponse login(@RequestBody @Valid AuthRequest req) {
         var user = new UsernamePasswordAuthenticationToken(req.email(), req.password());
         var auth = authenticationManager.authenticate(user);
 

@@ -1,0 +1,61 @@
+package com.rental.service.security;
+
+import com.rental.service.services.TokenService;
+import com.rental.service.services.UserService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.Optional;
+
+@Component
+public class JwtFilter extends OncePerRequestFilter {
+
+    private final TokenService tokenService;
+    private final UserService userService;
+
+    @Autowired
+    public JwtFilter(TokenService tokenService, UserService userService) {
+        this.tokenService = tokenService;
+        this.userService = userService;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        Optional<String> token = extractToken(request);
+
+        if (token.isPresent()) {
+            // Se existir, validamos o token
+            var subject = tokenService.validateToken(token.get());
+
+            // Se o token for válido, encontramos a pessoa associada
+            var userDetails = userService.loadUserByUsername(subject);
+
+            // Informamos o Spring Security que a pessoa está autenticada
+            var authentication = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+
+        filterChain.doFilter(request, response);
+    }
+
+    private Optional<String> extractToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(
+                authHeader.replace("Bearer ", "")
+        );
+    }
+}
