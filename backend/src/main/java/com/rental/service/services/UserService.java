@@ -1,7 +1,6 @@
 package com.rental.service.services;
 
 import com.rental.service.entities.User;
-import com.rental.service.enums.Role;
 import com.rental.service.repositories.UserRepository;
 import com.rental.service.services.exceptions.ExistingUserException;
 import com.rental.service.services.exceptions.UserNotFoundException;
@@ -28,6 +27,10 @@ public class UserService implements UserDetailsService {
             throw new ExistingUserException();
         }
 
+        // Encode password
+        var encodedPassword = passwordEncoder(user.getPassword());
+        user.setPassword(encodedPassword);
+
         return userRepository.save(user);
     }
 
@@ -36,7 +39,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(UserNotFoundException::new);
     }
 
-    private static String hashPassword(String password) {
+    private static String passwordEncoder(String password) {
         return new BCryptPasswordEncoder().encode(password);
     }
 
