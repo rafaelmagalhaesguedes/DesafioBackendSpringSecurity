@@ -1,4 +1,4 @@
-package com.rental.service.controller;
+package com.rental.service.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
