@@ -1,4 +1,4 @@
-package com.rental.service.controllers.dto;
+package com.rental.service.controllers.dto.customer;
 
 import com.rental.service.entities.Customer;
 import com.rental.service.enums.Role;
@@ -16,8 +16,8 @@ public record CustomerResponse(
                 customer.getId(),
                 customer.getName(),
                 customer.getEmail(),
-                customer.getDocument(),
-                customer.getNumberPhone(),
+                customer.getRawDocument(),
+                customer.getRawNumberPhone(),
                 customer.getRole()
         );
     }

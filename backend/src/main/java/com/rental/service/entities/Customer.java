@@ -1,8 +1,9 @@
 package com.rental.service.entities;
 
+import static com.rental.service.services.CryptoService.*;
+
 import com.rental.service.enums.Role;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -12,13 +13,36 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Customer extends User {
-    private String document;
-    private String numberPhone;
+
+    @Column(name = "document")
+    private String encryptedDocument;
+
+    @Column(name = "numberPhone")
+    private String encryptedNumberPhone;
+
+    @Transient
+    private String rawDocument;
+
+    @Transient
+    private String rawNumberPhone;
 
     @Builder
     public Customer(String name, String email, String password, Role role, String document, String numberPhone) {
         super(name, email, password, role);
-        this.document = document;
-        this.numberPhone = numberPhone;
+        this.rawDocument = document;
+        this.rawNumberPhone = numberPhone;
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void encryptFields() {
+        this.encryptedDocument = encrypt(rawDocument);
+        this.encryptedNumberPhone = encrypt(rawNumberPhone);
+    }
+
+    @PostLoad
+    public void decryptFields() {
+        this.rawDocument = decrypt(encryptedDocument);
+        this.rawNumberPhone = decrypt(encryptedNumberPhone);
     }
 }

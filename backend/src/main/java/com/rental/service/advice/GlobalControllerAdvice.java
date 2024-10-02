@@ -1,5 +1,6 @@
 package com.rental.service.advice;
 
+import com.rental.service.services.exceptions.ExistingUserException;
 import com.rental.service.services.exceptions.NotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class GlobalControllerAdvice {
      * Handle constraint violation exceptions.
      *
      * @param ex the ConstraintViolationException
-     * @return the response entity with error details
+     * @return error message and status code error
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Map<String, Object>> handleConstraintViolationExceptions(ConstraintViolationException ex) {
@@ -37,7 +38,7 @@ public class GlobalControllerAdvice {
      *
      * @param ex the MethodArgumentNotValidException
      * @param request the web request
-     * @return the response entity with error details
+     * @return error message and status code error
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest request) {
@@ -57,7 +58,7 @@ public class GlobalControllerAdvice {
      * Handle BadCredentialsException response entity.
      *
      * @param ex the BadCredentialsException
-     * @return the response entity
+     * @return error message and status code error
      */
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleBadCredentialsException(BadCredentialsException ex) {
@@ -69,10 +70,25 @@ public class GlobalControllerAdvice {
     }
 
     /**
+     * Handle ExistingUserException response entity.
+     *
+     * @param ex the ExistingUserException
+     * @return error message and status code error
+     */
+    @ExceptionHandler(ExistingUserException.class)
+    public ResponseEntity<Map<String, Object>> handleExistingUser(ExistingUserException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("message", ex.getMessage());
+        body.put("statusCode", HttpStatus.CONFLICT.value());
+
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
+    /**
      * Handle NotFoundException response entity.
      *
      * @param ex the NotFoundException
-     * @return the response entity
+     * @return error message and status code error
      */
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFoundException(NotFoundException ex) {

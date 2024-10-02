@@ -2,16 +2,12 @@ package com.rental.service.services;
 
 import com.rental.service.entities.Customer;
 import com.rental.service.repositories.CustomerRepository;
-import com.rental.service.repositories.UserRepository;
-import com.rental.service.services.exceptions.ExistingCustomerException;
+import com.rental.service.services.exceptions.ExistingUserException;
 import com.rental.service.services.exceptions.CustomerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,32 +16,27 @@ import java.util.List;
 @Service
 public class CustomerService {
     private final CustomerRepository customerRepository;
-    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, UserRepository userRepository) {
+    public CustomerService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
         this.customerRepository = customerRepository;
-        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
-    public Customer create(Customer customer) throws ExistingCustomerException {
-        var existingCustomer = userRepository.findByEmail(customer.getEmail());
+    public Customer create(Customer customer) throws ExistingUserException {
+        var existingCustomer = customerRepository.existsByEmail(customer.getEmail());
 
-        if (existingCustomer.isPresent()) {
-            throw new ExistingCustomerException();
+        if (existingCustomer) {
+            throw new ExistingUserException();
         }
 
-        var encodedPassword = passwordEncoder(customer.getPassword());
+        var encodedPassword = passwordEncoder.encode(customer.getPassword());
 
         customer.setPassword(encodedPassword);
 
         return customerRepository.save(customer);
-    }
-
-    public Customer findById(Long customerId) throws CustomerNotFoundException {
-        return customerRepository.findById(customerId)
-                .orElseThrow(CustomerNotFoundException::new);
     }
 
     @Transactional
@@ -54,8 +45,8 @@ public class CustomerService {
 
         customerFromDb.setName(customer.getName());
         customerFromDb.setEmail(customer.getEmail());
-        customerFromDb.setNumberPhone(customer.getNumberPhone());
-        customerFromDb.setDocument(customer.getDocument());
+        customerFromDb.setRawNumberPhone(customer.getRawNumberPhone());
+        customerFromDb.setRawDocument(customer.getRawDocument());
 
         customerRepository.save(customerFromDb);
     }
@@ -66,14 +57,15 @@ public class CustomerService {
         customerRepository.deleteById(customer.getId());
     }
 
+    public Customer findById(Long customerId) throws CustomerNotFoundException {
+        return customerRepository.findById(customerId)
+                .orElseThrow(CustomerNotFoundException::new);
+    }
+
     public List<Customer> list(int pageNumber, int pageSize) {
         var pageable = PageRequest.of(pageNumber, pageSize);
         Page<Customer> page = customerRepository.findAll(pageable);
 
         return page.getContent();
-    }
-
-    private static String passwordEncoder(String password) {
-        return new BCryptPasswordEncoder().encode(password);
     }
 }

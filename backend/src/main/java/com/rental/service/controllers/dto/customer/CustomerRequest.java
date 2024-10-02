@@ -1,4 +1,4 @@
-package com.rental.service.controllers.dto;
+package com.rental.service.controllers.dto.customer;
 
 import com.rental.service.entities.Customer;
 import com.rental.service.enums.Role;

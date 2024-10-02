@@ -1,11 +1,10 @@
 package com.rental.service.controllers;
 
-import com.rental.service.controllers.dto.CustomerRequest;
-import com.rental.service.controllers.dto.CustomerResponse;
+import com.rental.service.controllers.dto.customer.CustomerRequest;
+import com.rental.service.controllers.dto.customer.CustomerResponse;
 import com.rental.service.entities.Customer;
-import com.rental.service.entities.User;
 import com.rental.service.services.CustomerService;
-import com.rental.service.services.exceptions.ExistingCustomerException;
+import com.rental.service.services.exceptions.ExistingUserException;
 import com.rental.service.services.exceptions.CustomerNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ public class CustomerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CustomerResponse saveCustomer(@RequestBody @Valid CustomerRequest customerRequest) throws ExistingCustomerException {
+    public CustomerResponse saveCustomer(@RequestBody @Valid CustomerRequest customerRequest) throws ExistingUserException {
         var customer = customerService.create(customerRequest.toCustomer());
         return CustomerResponse.fromCustomer(customer);
     }
