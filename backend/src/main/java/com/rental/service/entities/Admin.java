@@ -9,16 +9,15 @@ import lombok.*;
 @DiscriminatorValue("ADMIN")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class Admin extends User {
-    private String department;
-    private String register;
+    private boolean isActive;
+    private boolean isDeleted;
 
     @Builder
-    public Admin(String name, String email, String password, Role role, String department, String register) {
+    public Admin(String name, String email, String password, Role role) {
         super(name, email, password, role);
-        this.department = department;
-        this.register = register;
+        this.isActive = true;
+        this.isDeleted = false;
     }
 }
