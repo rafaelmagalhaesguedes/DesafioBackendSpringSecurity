@@ -16,7 +16,7 @@ O desafio consiste em criar um microsserviço de autenticação e autorização 
 ## Uso
 
 1. Clone o projeto para sua máquina
-2. Na pasta raiz, subas os serviços com Docker:
+2. Na pasta raiz, suba os serviços com Docker:
 
     ```
     docker compose up -d --build
