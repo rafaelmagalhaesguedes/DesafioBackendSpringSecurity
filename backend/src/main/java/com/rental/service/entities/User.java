@@ -12,25 +12,29 @@ import java.util.List;
 
 @Entity
 @Table(name = "tb_users")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
     private String name;
-
-    @Column(unique = true)
     private String email;
-
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    public User(String name, String email, String password, Role role) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
