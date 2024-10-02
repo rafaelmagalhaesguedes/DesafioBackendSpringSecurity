@@ -3,6 +3,9 @@ package com.rental.service.controllers;
 import com.rental.service.controllers.dto.auth.AuthRequest;
 import com.rental.service.controllers.dto.auth.TokenResponse;
 import com.rental.service.services.TokenService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +29,11 @@ public class AuthController {
         this.tokenService = tokenService;
     }
 
+    @Operation(summary = "Authenticate user and generate JWT token")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully authenticated and token generated"),
+            @ApiResponse(responseCode = "401", description = "Invalid credentials")
+    })
     @PostMapping("/login")
     public TokenResponse login(@RequestBody @Valid AuthRequest req) {
         var user = new UsernamePasswordAuthenticationToken(req.email(), req.password());
@@ -36,10 +44,13 @@ public class AuthController {
         return new TokenResponse(token);
     }
 
+    @Operation(summary = "Logout user and clear security context")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully logged out")
+    })
     @PostMapping("/logout")
     public ResponseEntity<String> logout() {
         SecurityContextHolder.clearContext();
-
         return ResponseEntity.ok().body("Successfully logged out.");
     }
 }
