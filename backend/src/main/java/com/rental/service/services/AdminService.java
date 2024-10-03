@@ -2,6 +2,7 @@ package com.rental.service.services;
 
 import com.rental.service.entities.Admin;
 import com.rental.service.repositories.AdminRepository;
+import com.rental.service.repositories.UserRepository;
 import com.rental.service.services.exceptions.AdminNotFoundException;
 import com.rental.service.services.exceptions.ExistingUserException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,18 +12,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AdminService {
+    private final UserRepository userRepository;
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AdminService(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
+    public AdminService(UserRepository userRepository, AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
         this.adminRepository = adminRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     public Admin create(Admin admin) {
-        var existingAdmin = existsByEmail(admin.getEmail());
+        var existingAdmin = userRepository.existsByEmail(admin.getEmail());
 
         if (existingAdmin) {
             throw new ExistingUserException();
@@ -33,6 +36,11 @@ public class AdminService {
         admin.setPassword(encodedPassword);
 
         return adminRepository.save(admin);
+    }
+
+    public Admin findById(Long id) throws AdminNotFoundException {
+        return adminRepository.findById(id)
+                .orElseThrow(AdminNotFoundException::new);
     }
 
     @Transactional
@@ -46,7 +54,7 @@ public class AdminService {
     }
 
     @Transactional
-    public void updateStatus(Long id, boolean isActive) throws AdminNotFoundException {
+    public void updateActiveStatus(Long id, boolean isActive) throws AdminNotFoundException {
         var existingAdmin = findById(id);
         existingAdmin.setActive(isActive);
 
@@ -59,14 +67,5 @@ public class AdminService {
         existingAdmin.setDeleted(true);
 
         adminRepository.save(existingAdmin);
-    }
-
-    public Admin findById(Long id) throws AdminNotFoundException {
-        return adminRepository.findById(id)
-                .orElseThrow(AdminNotFoundException::new);
-    }
-
-    public boolean existsByEmail(String email) {
-        return adminRepository.existsByEmail(email);
     }
 }

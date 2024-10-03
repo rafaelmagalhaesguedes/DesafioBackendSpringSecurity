@@ -29,12 +29,10 @@ public class AuthController {
         this.tokenService = tokenService;
     }
 
-    @Operation(summary = "Authenticate user and generate JWT token")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully authenticated and token generated"),
-            @ApiResponse(responseCode = "401", description = "Invalid credentials")
-    })
     @PostMapping("/login")
+    @Operation(summary = "Authenticate user and generate JWT token")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully authenticated and token generated"),
+                            @ApiResponse(responseCode = "401", description = "Invalid credentials") })
     public TokenResponse login(@RequestBody @Valid AuthRequest req) {
         var user = new UsernamePasswordAuthenticationToken(req.email(), req.password());
         var auth = authenticationManager.authenticate(user);
@@ -44,11 +42,9 @@ public class AuthController {
         return new TokenResponse(token);
     }
 
-    @Operation(summary = "Logout user and clear security context")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully logged out")
-    })
     @PostMapping("/logout")
+    @Operation(summary = "Logout user and clear security context")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully logged out") })
     public ResponseEntity<String> logout() {
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok().body("Successfully logged out.");

@@ -25,7 +25,7 @@ public class TokenService {
 
     private Instant generateExpiration() {
         return Instant.now()
-                .plus(3, ChronoUnit.MINUTES); // 3 minutes to tests
+                .plus(1, ChronoUnit.HOURS);
     }
 
     public String validateToken(String token) {

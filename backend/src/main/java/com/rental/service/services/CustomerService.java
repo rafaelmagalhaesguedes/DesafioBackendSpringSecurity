@@ -2,6 +2,7 @@ package com.rental.service.services;
 
 import com.rental.service.entities.Customer;
 import com.rental.service.repositories.CustomerRepository;
+import com.rental.service.repositories.UserRepository;
 import com.rental.service.services.exceptions.ExistingUserException;
 import com.rental.service.services.exceptions.CustomerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,18 +16,20 @@ import java.util.List;
 
 @Service
 public class CustomerService {
+    private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
+    public CustomerService(UserRepository userRepository, CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     public Customer create(Customer customer) throws ExistingUserException {
-        var existingCustomer = customerRepository.existsByEmail(customer.getEmail());
+        var existingCustomer = userRepository.existsByEmail(customer.getEmail());
 
         if (existingCustomer) {
             throw new ExistingUserException();
