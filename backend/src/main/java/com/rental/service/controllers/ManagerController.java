@@ -71,7 +71,7 @@ public class ManagerController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{managerId}/")
+    @DeleteMapping("/{managerId}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(summary = "Soft delete an manager by ID")
     @ApiResponses(value = { @ApiResponse(responseCode = "204", description = "Manager deleted successfully"),
