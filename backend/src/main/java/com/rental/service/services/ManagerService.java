@@ -1,6 +1,5 @@
 package com.rental.service.services;
 
-import com.rental.service.entities.Customer;
 import com.rental.service.entities.Manager;
 import com.rental.service.repositories.ManagerRepository;
 import com.rental.service.repositories.UserRepository;
@@ -13,16 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ManagerService {
-    private final AdminService adminService;
     private final UserRepository userRepository;
     private final ManagerRepository managerRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public ManagerService(UserRepository userRepository, ManagerRepository managerRepository, AdminService adminService, PasswordEncoder passwordEncoder) {
+    public ManagerService(UserRepository userRepository, ManagerRepository managerRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.managerRepository = managerRepository;
-        this.adminService = adminService;
         this.passwordEncoder = passwordEncoder;
     }
 
