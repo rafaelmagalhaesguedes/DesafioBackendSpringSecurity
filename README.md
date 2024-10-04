@@ -1,6 +1,7 @@
-# Desafio Backend - Spring Security + JWT
+# Desafio Backend - Sistema de Autenticação e Autorização Baseado em Roles
 
-O desafio consiste em criar um microsserviço de autenticação e autorização de usuários em um sistema, integrando o Spring Security com JWT para gerenciamento de tokens. Foram implementados mecanismos de criptografia para proteger dados sensíveis e utilizada herança entre as classes para organizar e compartilhar comportamentos entre os diferentes tipos de usuários: User, Admin e Customer, cada um com permissões distintas.
+Sistema de autenticação e autorização onde usuários podem ter diferentes roles (admin, manager, customer).
+A API protege diferentes endpoints de acordo com as permissões associadas a cada role.
 
 ## Tecnologias
 
